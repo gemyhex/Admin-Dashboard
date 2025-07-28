@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+$primary: #0ea5e9;
+
+body {
+  @apply text-gray-800 dark:text-white;
+}
+
+.btn-primary {
+  background-color: $primary;
+  border: none;
+  @apply px-4 py-2 rounded text-white;
+}
