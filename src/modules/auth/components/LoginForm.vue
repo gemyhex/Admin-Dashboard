@@ -3,7 +3,6 @@
     <BaseInput
       v-model="email"
       name="email"
-      type="email"
       label="Username/Email"
       placeholder="admin@reza.com"
     />

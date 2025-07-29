@@ -27,18 +27,23 @@ export const useAuthStore = defineStore('auth', {
   },
 
   actions: {
-    login(email, password) {
+    login(emailOrUsername, password) {
       const mockUsers = [
         {
           id: 1,
           fullName: 'Vue User',
+          username: 'user',
           email: 'user@test.com',
           password: '123456',
           role: 'admin', // admin or user
         },
       ]
 
-      const user = mockUsers.find((u) => u.email === email && u.password === password)
+      const user = mockUsers.find(
+        (u) =>
+          (u.email === emailOrUsername || u.username === emailOrUsername) &&
+          u.password === password
+      )
 
       if (!user) return false
 
