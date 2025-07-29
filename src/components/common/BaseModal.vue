@@ -6,7 +6,6 @@
       @click.self="$emit('update:modelValue', false)"
     >
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-lg p-6 relative">
-        <!-- Close Button -->
         <BaseButton
           class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
           @click="$emit('update:modelValue', false)"
@@ -14,17 +13,14 @@
           &times;
         </BaseButton>
 
-        <!-- Modal Header -->
         <div v-if="$slots.header" class="mb-4">
           <slot name="header" />
         </div>
 
-        <!-- Modal Body -->
         <div class="mb-4">
           <slot />
         </div>
 
-        <!-- Modal Footer -->
         <div v-if="$slots.footer" class="mt-4 flex justify-end gap-2">
           <slot name="footer" />
         </div>

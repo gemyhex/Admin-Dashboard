@@ -1,28 +1,42 @@
 <template>
   <BaseModal v-model="isOpen">
-    <!-- Header -->
     <template #header>
       <h2 class="text-xl font-semibold">
         {{ form.id ? 'Edit User' : 'Add User' }}
       </h2>
     </template>
 
-    <!-- Default (form) content -->
     <template #default>
       <form @submit.prevent="handleSubmit" class="space-y-4">
-        <BaseInput v-model="form.fullName" label="Full Name" required/>
-        <BaseInput v-model="form.email" type="email" label="Email" required/>
+        <BaseInput
+          v-model="form.fullName"
+          label="Full Name"
+          required
+          :error="fullNameError"
+        />
+
+        <BaseInput
+          v-model="form.email"
+          label="Email"
+          type="email"
+          required
+          :error="emailError"
+        />
+
         <BaseSelect
           v-model="form.role"
+          label="Role"
+          placeholder="Select Role"
           :options="rolesOptions"
-          placeholder="All Roles"
-          label="Roles"
+          :error="roleError"
         />
+
         <BaseSelect
           v-model="form.status"
-          :options="statusesOptions"
-          placeholder="All Statuses"
           label="Status"
+          placeholder="Select Status"
+          :options="statusesOptions"
+          :error="statusError"
         />
       </form>
     </template>
@@ -39,9 +53,9 @@
   </BaseModal>
 </template>
 
-
 <script setup>
-import {reactive, watch, computed} from 'vue'
+import { reactive, watch, computed } from 'vue'
+import { useInputValidation } from '@/composables/useInputValidation'
 
 const props = defineProps({
   modelValue: Object,
@@ -57,21 +71,34 @@ const form = reactive({
   status: '',
 })
 
+const { error: fullNameError, validate: validateFullName } = useInputValidation()
+const { error: emailError, validate: validateEmail } = useInputValidation()
+const { error: roleError, validate: validateRole } = useInputValidation()
+const { error: statusError, validate: validateStatus } = useInputValidation()
+
 const rolesOptions = [
-  {value: 'admin', label: 'Admin'},
-  {value: 'user', label: 'User'},
+  { value: 'admin', label: 'Admin' },
+  { value: 'user', label: 'User' },
 ]
+
 const statusesOptions = [
-  {value: 'active', label: 'Active'},
-  {value: 'inactive', label: 'Inactive'},
+  { value: 'active', label: 'Active' },
+  { value: 'inactive', label: 'Inactive' },
 ]
 
 watch(
   () => props.modelValue,
   (val) => {
-    Object.assign(form, val || {id: null, fullName: '', email: '', role: '', status: ''})
+    Object.assign(form, val || {
+      id: null,
+      fullName: '',
+      email: '',
+      role: '',
+      status: '',
+    })
+    clearAllErrors()
   },
-  {immediate: true}
+  { immediate: true }
 )
 
 const isOpen = computed({
@@ -79,12 +106,28 @@ const isOpen = computed({
   set: (val) => emit('update:isOpen', val),
 })
 
+function clearAllErrors() {
+  fullNameError.value = ''
+  emailError.value = ''
+  roleError.value = ''
+  statusError.value = ''
+}
+
 const handleSubmit = () => {
-  emit('submit', {...form})
+  const isValid =
+    validateFullName(form.fullName) &
+    validateEmail(form.email, { type: 'email' }) &
+    validateRole(form.role) &
+    validateStatus(form.status)
+
+  if (isValid) {
+    emit('submit', { ...form })
+    isOpen.value = false
+  }
 }
 
 const close = () => {
-  emit('update:isOpen', false)
+  isOpen.value = false
 }
 </script>
 

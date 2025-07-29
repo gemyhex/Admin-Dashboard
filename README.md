@@ -1,35 +1,45 @@
-# vue-admin-dashboard
+# Vue 3 Admin Dashboard
 
-This template should help get you started developing with Vue 3 in Vite.
-
-## Recommended IDE Setup
-
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
+A modular, maintainable admin dashboard built with **Vue 3**, **Composition API**, **Tailwind CSS**, **Vue Router**, **Pinia**, and **localStorage** for persistence.
 
 ## Project Setup
 
-```sh
+```bash
+# Install dependencies
 npm install
-```
 
-### Compile and Hot-Reload for Development
-
-```sh
+# Run development server
 npm run dev
-```
 
-### Compile and Minify for Production
-
-```sh
+# Build for production
 npm run build
+
+# Preview production build
+npm run preview
 ```
 
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
+## Project Structure
+```bash
+src/
+├── components/
+│   └── common/          # Reusable UI components (BaseButton, BaseTable, BaseModal, etc.)
+│   └── layout/          # Reusable Layout components (Navbar, Sidebar)
+├── composables/         # Shared Composable (usePermissions, useInputValidation)
+├── modules/             # Feature modules (users, reports, auth, dashboard)
+│   └── users/
+│       ├── views/
+│       ├── components/
+│       └── store/   
+├── layouts/             
+├── router/             
+├── stores/            
+└── App.vue            
+```
+## Features
+```bash
+├── User management with CRUD, filters, pagination, and search
+├── Report management with status updates and modal viewing
+├── Dynamic toolbar generation from schema
+├── Responsive and accessible UI with Tailwind CSS
+├── Local state persistence with localStorage
 ```

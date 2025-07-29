@@ -34,7 +34,7 @@ export const useAuthStore = defineStore('auth', {
           fullName: 'Vue User',
           email: 'user@test.com',
           password: '123456',
-          role: 'admin',
+          role: 'admin', // admin or user
         },
       ]
 

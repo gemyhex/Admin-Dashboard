@@ -1,39 +1,16 @@
 <template>
   <div class="p-6">
-    <!-- Header -->
     <div class="flex justify-between items-center mb-4">
       <h1 class="text-xl font-bold text-gray-800 dark:text-white">User Management</h1>
-      <BaseButton v-if="auth.isAdmin" @click="openForm()">+ Add User</BaseButton>
+      <BaseButton v-if="hasRole('admin')" @click="openForm()">+ Add User</BaseButton>
     </div>
 
-    <!-- Filters Toolbar -->
-    <UserToolbar
-      :searchQuery="search"
-      :filterRole="roleFilter"
-      :filterStatus="statusFilter"
-      @update:searchQuery="search = $event"
-      @update:filterRole="roleFilter = $event"
-      @update:filterStatus="statusFilter = $event"
-    />
-
-    <!-- User Table -->
     <UserTable
-      :users="paginatedUsers"
-      :sortKey="sortKey"
+      :users="filteredUsersPaginated"
       @edit="openForm"
       @delete="deleteUser"
-      @sort="sortBy"
     />
 
-    <!-- Pagination -->
-    <BasePagination
-      :total="filteredUsers.length"
-      :currentPage="currentPage"
-      :perPage="perPage"
-      @update:currentPage="currentPage = $event"
-    />
-
-    <!-- User Modal -->
     <UserForm
       v-model:is-open="showForm"
       :modelValue="selectedUser"
@@ -44,52 +21,44 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
-
 import { useUserStore } from '@/stores/useUserStore'
-import { useAuthStore } from '@/modules/auth/store/useAuthStore'
+import { usePermission } from '@/composables/usePermission'
 
-import UserToolbar from '../components/UserToolbar.vue'
 import UserForm from '../components/UserForm.vue'
 import UserTable from '../components/UserTable.vue'
+import BaseButton from '@/components/common/BaseButton.vue'
 
-const auth = useAuthStore()
-const usersStore = useUserStore()
-usersStore.seedInitialUsers()
+const userStore = useUserStore()
+userStore.seedInitialUsers()
+
+const { hasRole } = usePermission()
 
 const search = ref('')
-const roleFilter = ref('')
-const statusFilter = ref('')
+const filters = ref({ role: '', status: '' })
 const sortKey = ref('')
 const currentPage = ref(1)
 const perPage = 5
-const selectedUser = ref(null)
 const showForm = ref(false)
+const selectedUser = ref(null)
 
-const filteredUsers = computed(() =>
-  usersStore.users
+const filteredUsers = computed(() => {
+  return userStore.users
     .filter(u =>
       u.fullName.toLowerCase().includes(search.value.toLowerCase()) ||
       u.email.toLowerCase().includes(search.value.toLowerCase())
     )
-    .filter(u => (roleFilter.value ? u.role === roleFilter.value : true))
-    .filter(u => (statusFilter.value ? u.status === statusFilter.value : true))
+    .filter(u => !filters.value.role || u.role === filters.value.role)
+    .filter(u => !filters.value.status || u.status === filters.value.status)
     .sort((a, b) => {
       if (!sortKey.value) return 0
-      return a[sortKey.value].localeCompare(b[sortKey.value])
+      return a[sortKey.value]?.localeCompare(b[sortKey.value])
     })
-)
-
-const start = computed(() => (currentPage.value - 1) * perPage)
-const end = computed(() => currentPage.value * perPage)
-const paginatedUsers = computed(() => filteredUsers.value.slice(start.value, end.value))
-
-watch([search, roleFilter, statusFilter], () => {
-  currentPage.value = 1
 })
 
-const sortBy = (key) => {
-  sortKey.value = sortKey.value === key ? '' : key
-}
+const filteredUsersPaginated = computed(() => {
+  const start = (currentPage.value - 1) * perPage
+  return filteredUsers.value.slice(start, start + perPage)
+})
 
 const openForm = (user = null) => {
   selectedUser.value = user
@@ -97,17 +66,18 @@ const openForm = (user = null) => {
 }
 
 const saveUser = (user) => {
-  if (user.id) {
-    usersStore.updateUser(user)
-  } else {
-    usersStore.addUser(user)
-  }
+  if (user.id) userStore.updateUser(user)
+  else userStore.addUser(user)
   showForm.value = false
 }
 
 const deleteUser = (id) => {
   if (confirm('Are you sure you want to delete this user?')) {
-    usersStore.deleteUser(id)
+    userStore.deleteUser(id)
   }
 }
+
+watch([search, filters], () => {
+  currentPage.value = 1
+})
 </script>

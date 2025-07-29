@@ -1,5 +1,15 @@
 <template>
-  <div class="overflow-x-auto">
+  <div class="overflow-x-auto space-y-4">
+    <slot name="toolbar">
+      <BaseToolbar
+        v-if="showSearch"
+        :search="search"
+        :filters="filters"
+        @update:search="$emit('update:search', $event)"
+        @update:filter="$emit('update:filter', $event)"
+      />
+    </slot>
+
     <table class="w-full text-sm text-left border-collapse">
       <thead class="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200">
       <tr>
@@ -14,7 +24,6 @@
         </th>
       </tr>
       </thead>
-
       <tbody>
       <tr
         v-for="(item, index) in items"
@@ -23,27 +32,27 @@
       >
         <slot :item="item" :index="index" />
       </tr>
-      <tr v-if="!items || items.length === 0">
+      <tr v-if="!items.length">
         <td :colspan="headers.length" class="p-4 text-center text-gray-400">
           No data found.
         </td>
       </tr>
       </tbody>
     </table>
+
+    <div class="pt-2">
+      <slot name="footer" />
+    </div>
   </div>
 </template>
 
 <script setup>
 defineProps({
-  headers: {
-    type: Array,
-    required: true,
-    default: () => [],
-  },
-  items: {
-    type: Array,
-    default: () => [],
-  },
+  headers: Array,
+  items: Array,
+  search: String,
+  filters: { type: Array, default: () => [] },
+  showSearch: { type: Boolean, default: true },
 })
-defineEmits(['sort'])
+defineEmits(['sort', 'update:search', 'update:filter'])
 </script>

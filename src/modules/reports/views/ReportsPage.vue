@@ -1,14 +1,8 @@
 <template>
-  <div>
-    <ReportToolbar
-      :searchQuery="searchQuery"
-      :filterType="filterType"
-      :filterStatus="filterStatus"
-      @update:searchQuery="searchQuery = $event"
-      @update:filterType="filterType = $event"
-      @update:filterStatus="filterStatus = $event"
-    />
-
+  <div class="p-6">
+    <div class="flex justify-between items-center mb-4">
+      <h1 class="text-xl font-bold text-gray-800 dark:text-white">Reports</h1>
+    </div>
     <ReportTable
       :reports="filteredReports"
       @view="openDetails"
@@ -16,19 +10,19 @@
     />
 
     <ReportDetails
-      v-model:visible="showModal"
+      v-model:is-open="showModal"
       :report="selectedReport"
     />
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { useReportStore } from '@/stores/useReportStore'
+import {ref, computed, onMounted} from 'vue'
+import {useReportStore} from '@/stores/useReportStore'
 
-import ReportToolbar from '../components/ReportToolbar.vue'
 import ReportTable from '../components/ReportTable.vue'
 import ReportDetails from '../components/ReportDetails.vue'
+import BaseButton from "@/components/common/BaseButton.vue";
 
 const store = useReportStore()
 
@@ -60,7 +54,7 @@ const openDetails = (report) => {
   showModal.value = true
 }
 
-const handleUpdateStatus = ({ id, status }) => {
+const handleUpdateStatus = ({id, status}) => {
   store.updateStatus(id, status)
 }
 </script>
