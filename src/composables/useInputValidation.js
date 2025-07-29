@@ -1,30 +1,48 @@
-import { ref } from 'vue'
+import { reactive } from 'vue'
 
 export function useInputValidation() {
-  const error = ref('')
+  const errors = reactive({})
 
-  const validate = (value, { type = 'text', required = true, minLength = null } = {}) => {
+  const validateField = (key, value, {
+    type = 'text',
+    required = true,
+    minLength = null,
+  } = {}) => {
     if (required && !value) {
-      error.value = 'This field is required.'
+      errors[key] = 'This field is required.'
       return false
     }
 
     if (type === 'email') {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
       if (!emailRegex.test(value)) {
-        error.value = 'Enter a valid email address.'
+        errors[key] = 'Enter a valid email address.'
         return false
       }
     }
 
     if (minLength && value.length < minLength) {
-      error.value = `Minimum length is ${minLength} characters.`
+      errors[key] = `Minimum length is ${minLength} characters.`
       return false
     }
 
-    error.value = ''
+    delete errors[key]
     return true
   }
 
-  return { error, validate }
+  const validateForm = (fields) => {
+    let isValid = true
+    for (const key in fields) {
+      const { value, rules } = fields[key]
+      const valid = validateField(key, value, rules)
+      if (!valid) isValid = false
+    }
+    return isValid
+  }
+
+  return {
+    errors,
+    validateField,
+    validateForm,
+  }
 }

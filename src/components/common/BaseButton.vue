@@ -1,6 +1,11 @@
 <template>
-  <button :class="buttonClass" v-bind="$attrs">
-    <slot />
+  <button
+    :class="buttonClass"
+    :disabled="loading || $attrs.disabled"
+    v-bind="$attrs"
+  >
+    <span v-if="loading">Please wait...</span>
+    <slot v-else />
   </button>
 </template>
 
@@ -12,10 +17,14 @@ const props = defineProps({
     type: String,
     default: 'primary', // options: 'primary', 'danger'
   },
+  loading: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const buttonClass = computed(() => {
-  const base = 'px-4 py-2 rounded text-sm font-medium transition'
+  const base = 'px-4 py-2 rounded text-sm font-medium transition disabled:opacity-50 disabled:cursor-not-allowed'
 
   const variants = {
     primary: 'bg-blue-600 text-white hover:bg-blue-700',

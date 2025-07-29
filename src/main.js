@@ -7,14 +7,16 @@ import BaseTable from '@/components/common/Table/BaseTable.vue'
 import BasePagination from '@/components/common/BasePagination.vue'
 import BaseModal from '@/components/common/BaseModal.vue'
 import BaseToolbar from '@/components/common/Table/BaseToolbar.vue'
-
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 
 import App from './App.vue'
 import router from './router/index.js'
+import axios from '@/plugins/axios'
 
 const app = createApp(App)
+
+app.config.globalProperties.$axios = axios
 
 app.use(createPinia())
 app.use(router)

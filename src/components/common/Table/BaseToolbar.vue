@@ -21,7 +21,6 @@
       <BaseButton
         v-if="filters.length"
         @click="resetFilters"
-        class="btn-secondary"
       >
         Reset
       </BaseButton>
@@ -56,10 +55,3 @@ const resetFilters = () => {
   }
 }
 </script>
-
-
-<style scoped>
-.btn-secondary {
-  @apply px-3 py-2 border rounded-md bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white;
-}
-</style>

@@ -1,13 +1,9 @@
-import {defineStore} from 'pinia'
-import {useRouter} from "vue-router";
+import { defineStore } from 'pinia'
+import axios from '@/plugins/axios'
 
 const STORAGE_KEY = 'auth_user'
+const TOKEN_KEY = 'auth_token'
 
-/**
- * Safely parses a JSON string and returns the object or null on failure.
- * @param {string|null} json - JSON string to parse.
- * @returns {object|null}
- */
 function safeParse(json) {
   try {
     return JSON.parse(json)
@@ -19,6 +15,7 @@ function safeParse(json) {
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     user: safeParse(localStorage.getItem(STORAGE_KEY)),
+    loading: false,
   }),
 
   getters: {
@@ -27,34 +24,36 @@ export const useAuthStore = defineStore('auth', {
   },
 
   actions: {
-    login(emailOrUsername, password) {
-      const mockUsers = [
-        {
-          id: 1,
-          fullName: 'Vue User',
-          username: 'user',
-          email: 'user@test.com',
-          password: '123456',
-          role: 'admin', // admin or user
-        },
-      ]
+    async login(emailOrUsername, password) {
+      this.loading = true
+      try {
+        const response = await axios.post('/user/authentication/login', {
+          email: emailOrUsername,
+          password,
+        })
 
-      const user = mockUsers.find(
-        (u) =>
-          (u.email === emailOrUsername || u.username === emailOrUsername) &&
-          u.password === password
-      )
+        const user = response.data?.data
+        const token = response.data?.token
 
-      if (!user) return false
+        if (!user || !token) throw new Error('Invalid response')
 
-      this.user = user
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(user))
-      return true
+        this.user = user
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(user))
+        localStorage.setItem(TOKEN_KEY, token)
+
+        return true
+      } catch (e) {
+        console.error('[Login Error]', e)
+        return false
+      } finally {
+        this.loading = false
+      }
     },
 
     logout() {
       this.user = null
       localStorage.removeItem(STORAGE_KEY)
-    }
+      localStorage.removeItem(TOKEN_KEY)
+    },
   },
 })

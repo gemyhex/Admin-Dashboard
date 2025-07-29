@@ -32,7 +32,7 @@ router.beforeEach((to, from, next) => {
 
   // Protect admin-only routes
   if (to.meta.requiresAdmin && !auth.isAdmin) {
-    return next('/dashboard')
+    return next('/')
   }
 
   next()
