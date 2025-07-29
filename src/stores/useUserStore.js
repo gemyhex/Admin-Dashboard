@@ -1,18 +1,11 @@
 import { defineStore } from 'pinia'
+import { safeParse } from '@/utils/helpers'
 
 const STORAGE_KEY = 'users'
 
-function safeParse(json) {
-  try {
-    return JSON.parse(json) || []
-  } catch {
-    return []
-  }
-}
-
 export const useUserStore = defineStore('users', {
   state: () => ({
-    users: safeParse(localStorage.getItem(STORAGE_KEY)),
+    users: safeParse(localStorage.getItem(STORAGE_KEY)) || [],
   }),
 
   getters: {

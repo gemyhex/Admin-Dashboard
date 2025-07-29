@@ -1,16 +1,9 @@
 import { defineStore } from 'pinia'
-import axios from '@/plugins/axios'
+import { safeParse } from '@/utils/helpers'
+import { httpRequest } from '@/services/api'
 
 const STORAGE_KEY = 'auth_user'
 const TOKEN_KEY = 'auth_token'
-
-function safeParse(json) {
-  try {
-    return JSON.parse(json)
-  } catch (e) {
-    return null
-  }
-}
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -27,11 +20,11 @@ export const useAuthStore = defineStore('auth', {
     async login(emailOrUsername, password) {
       this.loading = true
       try {
-        const response = await axios.post('/user/authentication/login', {
+        let form = {
           email: emailOrUsername,
           password,
-        })
-
+        }
+        const response = await httpRequest('/user/authentication/login', { method: 'POST', data: form })
         const user = response.data?.data
         const token = response.data?.token
 
