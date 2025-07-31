@@ -5,26 +5,25 @@
     </p>
 
     <div class="flex gap-2">
-      <button
-        class="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600"
+      <BaseButton
         :disabled="currentPage === 1"
         @click="$emit('update:currentPage', currentPage - 1)"
       >
         Previous
-      </button>
-      <button
-        class="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600"
+      </BaseButton>
+      <BaseButton
         :disabled="end >= total"
         @click="$emit('update:currentPage', currentPage + 1)"
       >
         Next
-      </button>
+      </BaseButton>
     </div>
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
+import BaseButton from "@/components/common/BaseButton.vue";
 
 const props = defineProps({
   total: Number,

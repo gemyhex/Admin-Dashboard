@@ -4,19 +4,33 @@
     :items="paginatedUsers"
     :search="search"
     :filters="filterConfig"
+    :loading="userStore.loading"
     @update:search="search = $event"
     @update:filter="handleFilterChange"
     @sort="sortBy"
   >
-    <template #default="{ item }">
-      <td class="p-3">{{ item.fullName }}</td>
-      <td class="p-3">{{ item.email }}</td>
-      <td class="p-3 capitalize">{{ item.role }}</td>
-      <td class="p-3 capitalize">{{ item.status }}</td>
-      <td class="p-3">{{ item.createdAt }}</td>
-      <td class="p-3 space-x-2">
-        <BaseButton v-if="hasRole('admin')" @click="emit('edit', item)">Edit</BaseButton>
-        <BaseButton v-if="hasRole('admin')" variant="danger" @click="emit('delete', item.id)">Delete</BaseButton>
+    <template #row="{ item }">
+      <td class="px-5 py-3">{{ item.fullName }}</td>
+      <td class="px-5 py-3">{{ item.email }}</td>
+      <td class="px-5 py-3 capitalize">{{ item.role }}</td>
+      <td class="px-5 py-3 capitalize">{{ item.status }}</td>
+      <td class="px-5 py-3">{{ item.createdAt }}</td>
+      <td class="px-5 py-3 space-x-2 whitespace-nowrap">
+        <BaseButton
+          v-if="hasRole('admin')"
+          size="sm"
+          @click="emit('edit', item)"
+        >
+          Edit
+        </BaseButton>
+        <BaseButton
+          v-if="hasRole('admin')"
+          size="sm"
+          variant="danger"
+          @click="emit('delete', item.id)"
+        >
+          Delete
+        </BaseButton>
       </td>
     </template>
 
@@ -35,10 +49,12 @@
 import { ref, computed } from 'vue'
 import { useUserStore } from '@/stores/useUserStore'
 import { RoleOptions, UserStatusOptions } from '../enums/enums'
-import {usePermission} from "@/composables/usePermission.js";
+import { usePermission } from '@/composables/usePermission.js'
 
 const emit = defineEmits(['edit', 'delete'])
+
 const { hasRole } = usePermission()
+const userStore = useUserStore()
 
 const headers = [
   { key: 'fullName', label: 'Name', sortable: true },
@@ -55,16 +71,14 @@ const sortKey = ref('')
 const currentPage = ref(1)
 const perPage = 5
 
-const userStore = useUserStore()
-
 const filteredUsers = computed(() => {
   return userStore.users
-    .filter(u =>
+    .filter((u) =>
       u.fullName.toLowerCase().includes(search.value.toLowerCase()) ||
       u.email.toLowerCase().includes(search.value.toLowerCase())
     )
-    .filter(u => !filters.value.role || u.role === filters.value.role)
-    .filter(u => !filters.value.status || u.status === filters.value.status)
+    .filter((u) => !filters.value.role || u.role === filters.value.role)
+    .filter((u) => !filters.value.status || u.status === filters.value.status)
     .sort((a, b) => {
       if (!sortKey.value) return 0
       return a[sortKey.value]?.localeCompare(b[sortKey.value])

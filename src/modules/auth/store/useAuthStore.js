@@ -1,6 +1,6 @@
-import { defineStore } from 'pinia'
-import { safeParse } from '@/utils/helpers'
-import { httpRequest } from '@/services/api'
+import {defineStore} from 'pinia'
+import {safeParse} from '@/utils/helpers'
+import {httpRequest} from '@/services/api'
 
 const STORAGE_KEY = 'auth_user'
 const TOKEN_KEY = 'auth_token'
@@ -22,17 +22,34 @@ export const useAuthStore = defineStore('auth', {
       try {
         let form = {
           email: emailOrUsername,
-          password,
+          credential: password,
         }
-        const response = await httpRequest('/user/authentication/login', { method: 'POST', data: form })
-        const user = response.data?.data
-        const token = response.data?.token
+        const response = await httpRequest('/user/authentication/login', {
+          method: 'POST',
+          data: form
+        })
+        const {
+          access_token,
+          avatar,
+          birthdate,
+          company_title,
+          email,
+          first_name,
+          last_name,
+        } = response.data
 
-        if (!user || !token) throw new Error('Invalid response')
+        if (!access_token) throw new Error('Invalid response')
 
-        this.user = user
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(user))
-        localStorage.setItem(TOKEN_KEY, token)
+        this.user = {
+          avatar,
+          birthdate,
+          company_title,
+          email,
+          first_name,
+          last_name
+        }
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(this.user))
+        localStorage.setItem(TOKEN_KEY, access_token)
 
         return true
       } catch (e) {

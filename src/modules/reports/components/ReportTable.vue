@@ -4,28 +4,34 @@
     :items="paginatedReports"
     :search="search"
     :filters="computedFilters"
+    :loading="false"
     @update:search="search = $event"
     @update:filter="handleFilterChange"
     @sort="sortReports"
   >
-    <template #default="{ item }">
-      <td class="p-3">{{ item.title }}</td>
-      <td class="p-3 capitalize">{{ item.type }}</td>
-      <td class="p-3 capitalize">{{ item.status }}</td>
-      <td class="p-3">{{ item.createdAt }}</td>
-      <td class="p-3 flex gap-2">
-        <BaseButton v-if="hasRole('admin')" size="sm" @click="$emit('view', item)">View</BaseButton>
+    <template #row="{ item }">
+      <td class="px-5 py-3">{{ item.title }}</td>
+      <td class="px-5 py-3 capitalize">{{ item.type }}</td>
+      <td class="px-5 py-3 capitalize">{{ item.status }}</td>
+      <td class="px-5 py-3">{{ item.createdAt }}</td>
+      <td class="px-5 py-3 flex gap-2 items-center">
+        <BaseButton
+          v-if="hasRole('admin')"
+          size="sm"
+          @click="emit('view', item)"
+        >
+          View
+        </BaseButton>
         <BaseSelect
           v-if="hasRole('admin')"
           class="w-28"
           :modelValue="item.status"
           :options="StatusOptions"
-          @update:modelValue="(val) => $emit('update-status', { id: item.id, status: val })"
+          @update:modelValue="(val) => emit('update-status', { id: item.id, status: val })"
         />
       </td>
     </template>
 
-    <!-- Pagination -->
     <template #footer>
       <BasePagination
         :total="filteredReports.length"
@@ -39,23 +45,18 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { usePermission } from '@/composables/usePermission.js'
 import { TypeOptions, StatusOptions } from '../enums/enums'
-import {usePermission} from "@/composables/usePermission.js";
 
-const props = defineProps({ reports: Array })
+const props = defineProps({
+  reports: {
+    type: Array,
+    required: true,
+  },
+})
 const emit = defineEmits(['view', 'update-status'])
 
 const { hasRole } = usePermission()
-
-const search = ref('')
-const currentPage = ref(1)
-const perPage = 5
-const sortKey = ref('')
-
-const filtersData = ref({
-  type: '',
-  status: '',
-})
 
 const headers = [
   { key: 'title', label: 'Title', sortable: true },
@@ -65,6 +66,14 @@ const headers = [
   { key: 'actions', label: 'Actions' },
 ]
 
+const search = ref('')
+const sortKey = ref('')
+const currentPage = ref(1)
+const perPage = 5
+const filtersData = ref({
+  type: '',
+  status: '',
+})
 
 const computedFilters = computed(() => [
   {
@@ -98,9 +107,7 @@ const sortReports = (key) => {
 
 const filteredReports = computed(() => {
   return props.reports
-    .filter((r) =>
-      r.title.toLowerCase().includes(search.value.toLowerCase())
-    )
+    .filter((r) => r.title.toLowerCase().includes(search.value.toLowerCase()))
     .filter((r) => !filtersData.value.type || r.type === filtersData.value.type)
     .filter((r) => !filtersData.value.status || r.status === filtersData.value.status)
     .sort((a, b) => {

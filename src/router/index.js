@@ -3,16 +3,8 @@ import authRoutes from '@/modules/auth/router/routes'
 import dashboardRoutes from '@/modules/dashboard/router/routes'
 import {useAuthStore} from '@/modules/auth/store/useAuthStore'
 
-const baseRoutes = [
-  {
-    path: '/',
-    redirect: '/dashboard',
-    meta: {requiresAuth: true, name: 'Dashboard'},
-  },
-]
-
 const appName = import.meta.env.VITE_APP_NAME || 'Vue App'
-const routes = [...authRoutes, ...dashboardRoutes, ...baseRoutes]
+const routes = [...authRoutes, ...dashboardRoutes]
 
 const router = createRouter({
   history: createWebHistory(),

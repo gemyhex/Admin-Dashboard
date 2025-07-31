@@ -8,6 +8,10 @@ export default [
     meta: {requiresAuth: true},
     children: [
       {
+        path: '',
+        redirect: 'dashboard',
+      },
+      {
         path: 'dashboard',
         name: 'Dashboard',
         component: () => import('@/modules/dashboard/views/DashboardPage.vue'),

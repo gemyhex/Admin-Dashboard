@@ -13,7 +13,7 @@ const handleLogout = () => {
 
 <template>
   <div class="flex items-center space-x-2">
-    <span class="text-gray-700 dark:text-gray-200 text-sm">{{ auth.user?.fullName }}</span>
-    <BaseButton @click="handleLogout" class="text-sm bg-transparent hover:bg-transparent text-red-500 hover:underline">Logout</BaseButton>
+    <span class="text-gray-700 dark:text-gray-200 text-sm font-semibold">{{ auth.user?.first_name }}</span>
+    <BaseButton @click="handleLogout">Logout</BaseButton>
   </div>
 </template>

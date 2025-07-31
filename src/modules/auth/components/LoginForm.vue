@@ -55,7 +55,7 @@ const handleLogin = async (formData) => {
   const success = await auth.login(formData.email, formData.password)
 
   if (success) {
-    await router.push('/dashboard')
+    await router.push('/')
   } else {
     errorMessage.value = 'Invalid credentials'
   }

@@ -12,10 +12,8 @@
       :id="name"
       :value="modelValue"
       @change="$emit('update:modelValue', $event.target.value)"
-      :class="[
-        baseClass,
-        error ? 'border-red-500' : 'border-gray-300',
-      ]"
+      :class="computedSelectClasses"
+      v-bind="$attrs"
     >
       <option v-if="placeholder" disabled value="">{{ placeholder }}</option>
       <option
@@ -32,7 +30,9 @@
 </template>
 
 <script setup>
-defineProps({
+import { computed } from 'vue'
+
+const props = defineProps({
   modelValue: [String, Number],
   name: String,
   label: String,
@@ -46,7 +46,13 @@ defineProps({
 
 defineEmits(['update:modelValue'])
 
-const baseClass =
-  'w-full px-4 py-2 rounded-lg bg-white/10 backdrop-blur-md border border-white/30 text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
+const baseSelectClass =
+  'w-full px-4 py-2 rounded-lg bg-white backdrop-blur-md border bg-white dark:bg-gray-700 dark:text-white dark:border-gray-600 focus:outline-none'
 
+const computedSelectClasses = computed(() => [
+  baseSelectClass,
+  {
+    'border-red-500 focus:ring-red-500 focus:border-red-500': !!props.error,
+  },
+])
 </script>

@@ -24,7 +24,7 @@ const props = defineProps({
 })
 
 const buttonClass = computed(() => {
-  const base = 'px-4 py-2 text-white font-semibold transition duration-200'
+  const base = 'px-4 py-2 text-white text-sm transition duration-200 rounded'
 
   const variants = {
     primary: 'bg-blue-400 text-white hover:bg-blue-500',
