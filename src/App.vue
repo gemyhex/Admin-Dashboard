@@ -1,11 +1,8 @@
 <script setup>
-import { RouterView } from 'vue-router'
+import {RouterView} from 'vue-router'
 </script>
 
 <template>
-  <RouterView />
+  <RouterView/>
+  <BaseToaster/>
 </template>
-
-<style scoped>
-
-</style>

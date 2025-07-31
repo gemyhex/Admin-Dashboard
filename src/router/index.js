@@ -7,11 +7,11 @@ const baseRoutes = [
   {
     path: '/',
     redirect: '/dashboard',
-    meta: {requiresAuth: true},
+    meta: {requiresAuth: true, name: 'Dashboard'},
   },
 ]
 
-
+const appName = import.meta.env.VITE_APP_NAME || 'Vue App'
 const routes = [...authRoutes, ...dashboardRoutes, ...baseRoutes]
 
 const router = createRouter({
@@ -19,7 +19,12 @@ const router = createRouter({
   routes,
 })
 
+const updateTitle = async (to) => {
+  document.title = `${to?.meta?.name} - ${appName}`
+}
+
 router.beforeEach((to, from, next) => {
+  updateTitle(to)
   const auth = useAuthStore()
 
   // Skip guard for public pages like login

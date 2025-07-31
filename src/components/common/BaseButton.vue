@@ -24,10 +24,10 @@ const props = defineProps({
 })
 
 const buttonClass = computed(() => {
-  const base = 'px-4 py-2 rounded text-sm font-medium transition disabled:opacity-50 disabled:cursor-not-allowed'
+  const base = 'px-4 py-2 text-white font-semibold transition duration-200'
 
   const variants = {
-    primary: 'bg-blue-600 text-white hover:bg-blue-700',
+    primary: 'bg-blue-400 text-white hover:bg-blue-500',
     danger: 'bg-red-600 text-white hover:bg-red-700',
   }
 

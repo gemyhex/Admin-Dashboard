@@ -11,6 +11,9 @@ export default [
         path: 'dashboard',
         name: 'Dashboard',
         component: () => import('@/modules/dashboard/views/DashboardPage.vue'),
+        meta: {
+          name: 'Dashboard',
+        }
       },
 
       ...userRoutes,

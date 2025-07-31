@@ -26,7 +26,6 @@ import { usePermission } from '@/composables/usePermission'
 
 import UserForm from '../components/UserForm.vue'
 import UserTable from '../components/UserTable.vue'
-import BaseButton from '@/components/common/BaseButton.vue'
 
 const userStore = useUserStore()
 userStore.seedInitialUsers()

@@ -2,46 +2,20 @@
   <BaseModal v-model="isOpen">
     <template #header>
       <h2 class="text-xl font-semibold">
-        {{ form.id ? 'Edit User' : 'Add User' }}
+        {{ formValues.id ? 'Edit User' : 'Add User' }}
       </h2>
     </template>
 
     <template #default>
-      <form @submit.prevent="handleSubmit" class="space-y-4">
-        <BaseInput
-          v-model="form.fullName"
-          label="Full Name"
-          required
-          :error="fullNameError"
-        />
-
-        <BaseInput
-          v-model="form.email"
-          label="Email"
-          type="email"
-          required
-          :error="emailError"
-        />
-
-        <BaseSelect
-          v-model="form.role"
-          label="Role"
-          placeholder="Select Role"
-          :options="rolesOptions"
-          :error="roleError"
-        />
-
-        <BaseSelect
-          v-model="form.status"
-          label="Status"
-          placeholder="Select Status"
-          :options="statusesOptions"
-          :error="statusError"
-        />
-      </form>
+      <DynamicForm
+        :fields="fields"
+        :errors="errors"
+        :error-message="errorMessage"
+        :loading="false"
+        has-external-actions
+      />
     </template>
 
-    <!-- Footer -->
     <template #footer>
       <BaseButton type="button" class="btn-secondary" @click="close">
         Cancel
@@ -54,79 +28,99 @@
 </template>
 
 <script setup>
-import { reactive, watch, computed } from 'vue'
-import { useInputValidation } from '@/composables/useInputValidation'
+import {ref, computed, watch} from 'vue'
+import {useInputValidation} from '@/composables/useInputValidation'
+import {useDynamicForm} from '@/composables/useDynamicForm'
+import {
+  RoleOptions,
+  UserStatusOptions
+} from '../enums/enums'
 
 const props = defineProps({
   modelValue: Object,
   isOpen: Boolean,
 })
+
 const emit = defineEmits(['submit', 'update:isOpen'])
-
-const form = reactive({
-  id: null,
-  fullName: '',
-  email: '',
-  role: '',
-  status: '',
-})
-
-const { error: fullNameError, validate: validateFullName } = useInputValidation()
-const { error: emailError, validate: validateEmail } = useInputValidation()
-const { error: roleError, validate: validateRole } = useInputValidation()
-const { error: statusError, validate: validateStatus } = useInputValidation()
-
-const rolesOptions = [
-  { value: 'admin', label: 'Admin' },
-  { value: 'user', label: 'User' },
-]
-
-const statusesOptions = [
-  { value: 'active', label: 'Active' },
-  { value: 'inactive', label: 'Inactive' },
-]
-
-watch(
-  () => props.modelValue,
-  (val) => {
-    Object.assign(form, val || {
-      id: null,
-      fullName: '',
-      email: '',
-      role: '',
-      status: '',
-    })
-    clearAllErrors()
-  },
-  { immediate: true }
-)
 
 const isOpen = computed({
   get: () => props.isOpen,
   set: (val) => emit('update:isOpen', val),
 })
 
-function clearAllErrors() {
-  fullNameError.value = ''
-  emailError.value = ''
-  roleError.value = ''
-  statusError.value = ''
-}
+const errorMessage = ref('')
+const {errors, validateForm} = useInputValidation()
 
-const handleSubmit = () => {
-  const isValid =
-    validateFullName(form.fullName) &
-    validateEmail(form.email, { type: 'email' }) &
-    validateRole(form.role) &
-    validateStatus(form.status)
+const fields = [
+  {
+    name: 'fullName',
+    type: 'text',
+    label: 'Full Name',
+    placeholder: 'Enter full name',
+    defaultValue: '',
+  },
+  {
+    name: 'email',
+    type: 'text',
+    label: 'Email',
+    placeholder: 'Enter email',
+    defaultValue: '',
+  },
+  {
+    name: 'role',
+    type: 'select',
+    label: 'Role',
+    placeholder: 'Select Role',
+    options: RoleOptions,
+    defaultValue: '',
+  },
+  {
+    name: 'status',
+    type: 'select',
+    label: 'Status',
+    placeholder: 'Select Status',
+    options: UserStatusOptions,
+    defaultValue: '',
+  },
+]
 
-  if (isValid) {
-    emit('submit', { ...form })
-    isOpen.value = false
-  }
-}
+const {
+  formValues,
+  resetForm,
+  initializeForm,
+} = useDynamicForm(fields)
+
+watch(
+  () => props.modelValue,
+  (val) => {
+    initializeForm([
+      ...fields.map(field => ({
+        ...field,
+        defaultValue: val?.[field.name] ?? field.defaultValue ?? '',
+      })),
+    ])
+    errorMessage.value = ''
+    errors.value = {}
+  },
+  {immediate: true}
+)
 
 const close = () => {
+  isOpen.value = false
+  resetForm()
+}
+
+const handleSubmit = (formData) => {
+  const isValid = validateForm({
+    fullName: {value: formData.fullName, rules: {required: true}},
+    email: {value: formData.email, rules: {required: true, type: 'email'}},
+    role: {value: formData.role, rules: {required: true}},
+    status: {value: formData.status, rules: {required: true}},
+  })
+
+  if (!isValid) return
+
+  emit('submit', formData)
   isOpen.value = false
 }
 </script>

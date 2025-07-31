@@ -1,8 +1,12 @@
 <template>
   <AuthLayout>
-    <div class="bg-white dark:bg-gray-800 p-6 rounded shadow w-full max-w-md">
-      <h2 class="text-xl font-bold mb-4 text-center text-gray-800 dark:text-white">Login</h2>
-      <LoginForm />
+    <div class="w-screen min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-800 to-purple-900 px-4">
+      <div class="w-full max-w-md backdrop-blur-lg bg-white/10 dark:bg-white/10 border border-white/20 rounded-xl shadow-xl p-8 space-y-6">
+        <h2 class="text-center text-2xl font-bold text-white">
+          {{ appName }}
+        </h2>
+        <LoginForm />
+      </div>
     </div>
   </AuthLayout>
 </template>
@@ -10,4 +14,6 @@
 <script setup>
 import LoginForm from '../components/LoginForm.vue'
 import AuthLayout from '@/layouts/AuthLayout.vue'
+
+const appName = import.meta.env.VITE_APP_NAME
 </script>

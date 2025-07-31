@@ -1,65 +1,61 @@
 <template>
-  <form @submit.prevent="onLogin" class="space-y-4">
-    <BaseInput
-      v-model="email"
-      label="Username / Email"
-      placeholder="Enter Email / Username"
-      :error="errors.email"
-    />
-
-    <BaseInput
-      v-model="password"
-      type="password"
-      label="Password"
-      placeholder="Enter password"
-      :error="errors.password"
-    />
-
-    <p v-if="errorMessage" class="text-red-500 text-sm">{{ errorMessage }}</p>
-
-    <BaseButton
-      class="btn-primary w-full"
-      type="submit"
-      :loading="auth.loading"
-    >
-      Login
-    </BaseButton>
-  </form>
+  <DynamicForm
+    :fields="loginFields"
+    :errors="errors"
+    :error-message="errorMessage"
+    :loading="auth.loading"
+    submit-text="Login"
+    @submit="handleLogin"
+  />
 </template>
 
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/modules/auth/store/useAuthStore'
-import { useInputValidation } from '@/composables/useInputValidation.js'
+import { useInputValidation } from '@/composables/useInputValidation'
 
+const router = useRouter()
+const auth = useAuthStore()
+
+const errorMessage = ref('')
 const { errors, validateForm } = useInputValidation()
 
-const email = ref('ahmed.gamal@digrc.com')
-const password = ref('C7y$$!PlJ9EQ')
-const errorMessage = ref('')
-const auth = useAuthStore()
-const router = useRouter()
+const isDev = import.meta.env.DEV
 
-const onLogin = async () => {
+const loginFields = [
+  {
+    name: 'email',
+    type: 'text',
+    label: 'Username / Email',
+    autocomplete: 'username',
+    placeholder: 'Enter your email or username',
+    defaultValue: isDev ? 'ahmed.gamal@digrc.com' : '',
+  },
+  {
+    name: 'password',
+    type: 'password',
+    label: 'Password',
+    autocomplete: 'password',
+    placeholder: 'Enter your password',
+    defaultValue: isDev ? 'C7y$$!PlJ9EQ' : '',
+  },
+]
+
+const handleLogin = async (formData) => {
   errorMessage.value = ''
+
   const isValid = validateForm({
-    email: {
-      value: email.value,
-      rules: { required: true },
-    },
-    password: {
-      value: password.value,
-      rules: { required: true, minLength: 6 },
-    },
+    email: { value: formData.email, rules: { required: true } },
+    password: { value: formData.password, rules: { required: true, minLength: 6 } },
   })
 
   if (!isValid) return
 
-  const success = await auth.login(email.value, password.value)
+  const success = await auth.login(formData.email, formData.password)
 
   if (success) {
-    router.push('/dashboard')
+    await router.push('/dashboard')
   } else {
     errorMessage.value = 'Invalid credentials'
   }

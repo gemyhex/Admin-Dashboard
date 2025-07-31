@@ -15,8 +15,8 @@
       <td class="p-3 capitalize">{{ item.status }}</td>
       <td class="p-3">{{ item.createdAt }}</td>
       <td class="p-3 space-x-2">
-        <BaseButton v-if="hasRole('admin')" @click="$emit('edit', item)">Edit</BaseButton>
-        <BaseButton v-if="hasRole('admin')" variant="danger" @click="$emit('delete', item.id)">Delete</BaseButton>
+        <BaseButton v-if="hasRole('admin')" @click="emit('edit', item)">Edit</BaseButton>
+        <BaseButton v-if="hasRole('admin')" variant="danger" @click="emit('delete', item.id)">Delete</BaseButton>
       </td>
     </template>
 
