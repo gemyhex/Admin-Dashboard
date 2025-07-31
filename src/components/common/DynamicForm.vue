@@ -12,8 +12,10 @@
       :error="errors[field.name]"
     />
 
+    <slot name="actions" v-if="hasExternalActions" />
+
     <BaseButton
-      v-if="!hasExternalActions"
+      v-else
       class="btn-primary min-w-40 max-w-full rounded mx-auto"
       type="submit"
       :loading="loading"

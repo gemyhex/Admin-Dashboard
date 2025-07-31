@@ -13,16 +13,19 @@
         :error-message="errorMessage"
         :loading="false"
         has-external-actions
-      />
-    </template>
-
-    <template #footer>
-      <BaseButton type="button" class="btn-secondary" @click="close">
-        Cancel
-      </BaseButton>
-      <BaseButton type="submit" class="btn-primary" @click="handleSubmit">
-        Save
-      </BaseButton>
+        @submit="handleSubmit"
+      >
+        <template #actions>
+          <div class="flex space-x-2">
+            <BaseButton type="button" class="btn-secondary" @click="close">
+              Cancel
+            </BaseButton>
+            <BaseButton type="submit" class="btn-primary" @click="handleSubmit">
+              Save
+            </BaseButton>
+          </div>
+        </template>
+      </DynamicForm>
     </template>
   </BaseModal>
 </template>
@@ -35,6 +38,7 @@ import {
   RoleOptions,
   UserStatusOptions
 } from '../enums/enums'
+import BaseModal from "@/components/common/BaseModal.vue";
 
 const props = defineProps({
   modelValue: Object,

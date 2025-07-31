@@ -1,6 +1,7 @@
 <template>
-  <aside class="w-64 bg-white dark:bg-gray-800 h-screen shadow">
-    <nav class="flex flex-col p-4 space-y-2">
+  <aside class="w-56 bg-white dark:bg-gray-800 min-h-screen shadow pt-6">
+    <h1 class="text-xl font-semibold dark:text-white text-center">Rezilens Dashboard</h1>
+    <nav class="flex flex-col p-4 mt-6 bg-white ">
       <SidebarLink to="/dashboard">Dashboard</SidebarLink>
       <SidebarLink to="/users">Users Management</SidebarLink>
       <SidebarLink to="/reports">Reports</SidebarLink>

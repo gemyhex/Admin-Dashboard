@@ -34,8 +34,8 @@ export const useAuthStore = defineStore('auth', {
           birthdate,
           company_title,
           email,
-          first_name,
-          last_name,
+          name,
+          roles
         } = response.data
 
         if (!access_token) throw new Error('Invalid response')
@@ -45,8 +45,8 @@ export const useAuthStore = defineStore('auth', {
           birthdate,
           company_title,
           email,
-          first_name,
-          last_name
+          name,
+          roles
         }
         localStorage.setItem(STORAGE_KEY, JSON.stringify(this.user))
         localStorage.setItem(TOKEN_KEY, access_token)

@@ -1,16 +1,16 @@
-import {useAuthStore} from '@/modules/auth/store/useAuthStore'
+import { useAuthStore } from '@/modules/auth/store/useAuthStore'
 
 export function usePermission() {
   const auth = useAuthStore()
 
   function hasRole(role) {
-    const userRole = auth.user?.role
-    if (!userRole) return false
+    const userRoles = auth.user?.roles
+    if (!Array.isArray(userRoles)) return false
 
     return Array.isArray(role)
-      ? role.includes(userRole)
-      : userRole === role
+      ? role.some(r => userRoles.includes(r))
+      : userRoles.includes(role)
   }
 
-  return {hasRole}
+  return { hasRole }
 }
